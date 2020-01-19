@@ -1,0 +1,11 @@
+{
+  "storage": {},
+  "parameters": {
+    "api_url": "https://client.priceedge.eu/papi/",
+    "username": "username",
+    "#password": "password",
+    "client_id": "client_id"
+  },
+  "image_parameters": {},
+  "authorization": {}
+}
