@@ -3,35 +3,21 @@
   "title": "Parameters",
   "required": [
     "api_url",
-    "username",
-    "#password",
-    "client_id"
+    "#token"
   ],
   "properties": {
     "api_url": {
       "type": "string",
       "title": "API URL",
       "propertyOrder": 100,
-      "description": "The URL, where the PriceEdge API sits."
+      "description": "The URL, where the Magento API sits."
     },
-    "username": {
-      "type": "string",
-      "title": "Username",
-      "description": "Username used to log in to the API.",
-      "propertyOrder": 200
-    },
-    "#password": {
+    "#token": {
       "type": "string",
       "format": "password",
-      "title": "Password",
-"description": "Password used to log in to the API.",
+      "title": "Token",
+      "description": "Authorization token to Magento API.",
       "propertyOrder": 300
-    },
-    "client_id": {
-      "type": "string",
-      "title": "Client ID",
-      "propertyOrder": 400,
-      "description": "Application Client ID."
     }
   }
 }

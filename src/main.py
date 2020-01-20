@@ -3,14 +3,14 @@ import os
 import sys
 import logging_gelf.handlers
 import logging_gelf.formatters
-from priceedge.component import PriceEdgeComponent
+from magento.component import MagentoComponent
 
 # Environment setup
-sys.tracebacklimit = 0
+sys.tracebacklimit = 3
 
 # Logging
 logging.basicConfig(
-    level=logging.INFO,
+    level=logging.DEBUG,
     format='%(asctime)s - %(levelname)-8s : [line:%(lineno)3s] %(message)s',
     datefmt="%Y-%m-%d %H:%M:%S")
 
@@ -34,7 +34,7 @@ if __name__ == '__main__':
 
     logging.info("Running component version %s..." % APP_VERSION)
 
-    c = PriceEdgeComponent()
+    c = MagentoComponent()
     c.run()
 
     logging.info("Writing finished.")

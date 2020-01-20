@@ -5,33 +5,28 @@ import logging
 import os
 import sys
 from kbc.env_handler import KBCEnvHandler
-from priceedge.client import PriceEdgeClient
+from magento.client import MagentoClient
 
 KEY_APIURL = 'api_url'
-KEY_USERNAME = 'username'
-KEY_PASSWORD = '#password'
-KEY_CLIENTID = 'client_id'
+KEY_TOKEN = '#token'
 
-MANDATORY_PARAMETERS = [KEY_APIURL, KEY_USERNAME, KEY_PASSWORD, KEY_CLIENTID]
+MANDATORY_PARAMETERS = [KEY_APIURL, KEY_TOKEN]
+MANDATORY_INPUTFIELDS = set(['endpoint', 'method', 'data'])
+SUPPORTED_METHODS = ['POST']
 
 
-class PriceEdgeComponent(KBCEnvHandler):
+class MagentoComponent(KBCEnvHandler):
 
     def __init__(self):
 
         super().__init__(mandatory_params=MANDATORY_PARAMETERS)
         self.validate_config(mandatory_params=MANDATORY_PARAMETERS)
-        self.getAndCheckInputTable()
 
         self.parApiUrl = self.cfg_params[KEY_APIURL]
-        self.parUsername = self.cfg_params[KEY_USERNAME]
-        self.parPassword = self.cfg_params[KEY_PASSWORD]
-        self.parClientId = self.cfg_params[KEY_CLIENTID]
+        self.parToken = self.cfg_params[KEY_TOKEN]
 
-        self.client = PriceEdgeClient(apiUrl=self.parApiUrl,
-                                      username=self.parUsername,
-                                      password=self.parPassword,
-                                      clientId=self.parClientId)
+        self.getAndCheckInputTable()
+        self.client = MagentoClient(apiUrl=self.parApiUrl, token=self.parToken)
 
     def getAndCheckInputTable(self):
 
@@ -50,11 +45,12 @@ class PriceEdgeComponent(KBCEnvHandler):
             tablePath = inputTables[0]
             self.reader = csv.DictReader(open(tablePath))
 
-            if 'endpoint' not in self.reader.fieldnames or 'data' not in self.reader.fieldnames:
-                logging.error("Required field \"endpoint\" or \"data\" is missing in the input table.")
+            missFields = MANDATORY_INPUTFIELDS - set(self.reader.fieldnames)
+            if len(missFields) != 0:
+                logging.error(f"Missing required fields {list(missFields)} in input table.")
                 sys.exit(1)
 
-            outputFields = self.reader.fieldnames + ['request_status', 'request_message']
+            outputFields = self.reader.fieldnames + ['request_status', 'request_message', 'request_code']
             outputPath = os.path.join(self.tables_out_path, 'result.csv')
             self.writer = csv.DictWriter(open(outputPath, 'w'), fieldnames=outputFields,
                                          restval='', extrasaction='ignore',
@@ -70,62 +66,62 @@ class PriceEdgeComponent(KBCEnvHandler):
             if reqEndpoint.startswith('/'):
                 reqEndpoint = reqEndpoint[1:]
 
-            try:
-                reqData = json.loads(row['data'])
+            reqMethod = row['method']
 
-            except ValueError as e:
-                self.varErrorCounter += 1
+            if reqMethod not in SUPPORTED_METHODS:
                 self.writer.writerow({
                     **row,
                     **{
-                        'request_status': "JSON_ERROR",
-                        'request_message': f"Invalid JSON detected in data. {e}"
+                        'request_status': "METHOD_ERROR",
+                        'request_message': f"Unsupported method {reqMethod} detected. Supported: {SUPPORTED_METHODS}.",
+                        'request_code': ''
                     }
                 })
 
                 continue
 
-            request = self.client.sendRequest(reqEndpoint, reqData)
+            try:
+                reqData = json.loads(row['data'])
+
+            except ValueError as e:
+                self.writer.writerow({
+                    **row,
+                    **{
+                        'request_status': "JSON_ERROR",
+                        'request_message': f"Invalid JSON detected in data. {e}",
+                        'request_code': ''
+                    }
+                })
+
+                continue
+
+            request = self.client.sendPostRequest(reqEndpoint, reqMethod, reqData)
             logging.debug("request returned")
             logging.debug(request)
             logging.debug(request.status_code)
+            # logging.debug(request.content)
 
             scRequest = request.status_code
             jsRequest = request.json()
-            if scRequest != 200:
-                self.varErrorCounter += 1
+            if request.ok is not True:
                 self.writer.writerow({
                     **row,
                     **{
                         'request_status': "REQUEST_ERROR",
-                        'request_message': jsRequest
+                        'request_message': jsRequest,
+                        'request_code': scRequest
                     }
                 })
 
             else:
-                errors = jsRequest.get('Errors', [])
-
-                if len(errors) == 0:
-                    self.writer.writerow({
-                        **row,
-                        **{
-                            'request_status': "SUCCESS"
-                        }
-                    })
-
-                else:
-                    self.writer.writerow({
-                        **row,
-                        **{
-                            'request_status': "REQUEST_ERROR",
-                            'request_message': errors
-                        }
-                    })
+                self.writer.writerow({
+                    **row,
+                    **{
+                        'request_status': "SUCCESS",
+                        'request_message': jsRequest,
+                        'request_code': scRequest
+                    }
+                })
 
     def run(self):
-
-        self.varErrorCounter = 0
         self.sendCall()
-
-        if self.varErrorCounter > 0:
-            logging.warn(f"There were {self.varErrorCounter} errors during process.")
