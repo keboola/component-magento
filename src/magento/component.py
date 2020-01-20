@@ -96,13 +96,9 @@ class MagentoComponent(KBCEnvHandler):
                 continue
 
             request = self.client.sendPostRequest(reqEndpoint, reqMethod, reqData)
-            logging.debug("request returned")
-            logging.debug(request)
-            logging.debug(request.status_code)
-            # logging.debug(request.content)
-
             scRequest = request.status_code
             jsRequest = request.json()
+
             if request.ok is not True:
                 self.writer.writerow({
                     **row,
@@ -117,7 +113,7 @@ class MagentoComponent(KBCEnvHandler):
                 self.writer.writerow({
                     **row,
                     **{
-                        'request_status': "SUCCESS",
+                        'request_status': "",
                         'request_message': jsRequest,
                         'request_code': scRequest
                     }
