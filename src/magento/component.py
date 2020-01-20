@@ -104,7 +104,7 @@ class MagentoComponent(KBCEnvHandler):
                     **row,
                     **{
                         'request_status': "REQUEST_ERROR",
-                        'request_message': jsRequest,
+                        'request_message': json.dumps(jsRequest),
                         'request_code': scRequest
                     }
                 })
@@ -113,8 +113,8 @@ class MagentoComponent(KBCEnvHandler):
                 self.writer.writerow({
                     **row,
                     **{
-                        'request_status': "",
-                        'request_message': jsRequest,
+                        'request_status': "REQUEST_OK",
+                        'request_message': json.dumps(jsRequest),
                         'request_code': scRequest
                     }
                 })
