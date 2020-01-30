@@ -12,7 +12,7 @@ KEY_TOKEN = '#token'
 
 MANDATORY_PARAMETERS = [KEY_APIURL, KEY_TOKEN]
 MANDATORY_INPUTFIELDS = set(['endpoint', 'method', 'data'])
-SUPPORTED_METHODS = ['POST']
+SUPPORTED_METHODS = ['POST', 'PUT']
 
 
 class MagentoComponent(KBCEnvHandler):
@@ -95,7 +95,13 @@ class MagentoComponent(KBCEnvHandler):
 
                 continue
 
-            request = self.client.sendPostRequest(reqEndpoint, reqMethod, reqData)
+            if reqMethod == 'POST':
+                request = self.client.sendPostRequest(reqEndpoint, reqMethod, reqData)
+            elif reqMethod == 'PUT':
+                request = self.client.sendPutRequest(reqEndpoint, reqMethod, reqData)
+            else:
+                pass
+
             scRequest = request.status_code
             jsRequest = request.json()
 
