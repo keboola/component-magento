@@ -16,7 +16,7 @@ class MagentoClient(HttpClientBase):
             'Authorization': f'Bearer {self.parToken}'
         }
 
-        super().__init__(self.parApiUrl, default_http_header=_defaultHeader)
+        super().__init__(self.parApiUrl, default_http_header=_defaultHeader, max_retries=5)
         logging.debug(self.base_url)
 
     def put_raw(self, *args, **kwargs):
