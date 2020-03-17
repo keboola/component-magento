@@ -103,7 +103,12 @@ class MagentoComponent(KBCEnvHandler):
                 pass
 
             scRequest = request.status_code
-            jsRequest = request.json()
+
+            try:
+                jsRequest = request.json()
+
+            except ValueError:
+                jsRequest = {'response': request.text}
 
             if request.ok is not True:
                 self.writer.writerow({
