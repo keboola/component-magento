@@ -10,13 +10,13 @@
       "type": "string",
       "title": "API URL",
       "propertyOrder": 100,
-      "description": "The URL, where the Magento API sits."
+      "description": "The URL, where the Magento API is located. The URL should not contain the <strong>rest</strong> part of the URL."
     },
     "#token": {
       "type": "string",
       "format": "password",
       "title": "Token",
-      "description": "Authorization token to Magento API.",
+      "description": "Authorization token for the Magento API.",
       "propertyOrder": 300
     }
   }

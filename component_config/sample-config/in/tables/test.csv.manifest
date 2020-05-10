@@ -12,13 +12,9 @@
     "is_alias": false,
     "attributes": [],
     "columns": [
-        "Type",
-        "Campaign_Name",
-        "Status",
-        "Start_Date",
-        "End_Date",
-        "Location",
-        "Eventbrite_link"
+        "endpoint",
+        "data",
+        "method"
     ],
     "metadata": [
         {

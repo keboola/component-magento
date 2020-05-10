@@ -6,7 +6,7 @@ import logging_gelf.formatters
 from magento.component import MagentoComponent
 
 # Environment setup
-sys.tracebacklimit = 3
+sys.tracebacklimit = 0
 
 # Logging
 logging.basicConfig(
@@ -28,7 +28,7 @@ if 'KBC_LOGGER_ADDR' in os.environ and 'KBC_LOGGER_PORT' in os.environ:
     # removes the initial stdout logging
     logger.removeHandler(logger.handlers[0])
 
-APP_VERSION = '0.0.1'
+APP_VERSION = '0.0.6'
 
 if __name__ == '__main__':
 

@@ -1,1 +1,1 @@
-Testing functional sample extractor for purposes of the python component template. 
+Magento is an open-source e-commerce platform written in PHP. It is one of the most popular open e-commerce systems in the network.

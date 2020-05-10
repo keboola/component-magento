@@ -1,10 +1,8 @@
 {
   "storage": {},
   "parameters": {
-    "api_url": "https://client.priceedge.eu/papi/",
-    "username": "username",
-    "#password": "password",
-    "client_id": "client_id"
+    "api_url": "https://sk.lab.company.dev",
+    "#token": "API_TOKEN"
   },
   "image_parameters": {},
   "authorization": {}
